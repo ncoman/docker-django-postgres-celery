@@ -4,11 +4,11 @@ Welcome to the Docker Django Example Project!
 
 Components:
 
-Redis
-Postgres
-Gunicorn
-Nginx
-Celery
-Flower
-Silk
-Swagger
+- Redis
+- Postgres
+- Gunicorn
+- Nginx
+- Celery
+- Flower
+- Silk
+- Swagger
