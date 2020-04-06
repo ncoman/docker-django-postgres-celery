@@ -1,0 +1,115 @@
+version: '3.5'
+
+services:
+  #===========================
+  # REDIS
+  #TODO You are exposing redis port, which is not necessary, not even recommended. Just link it to the website service
+  #===========================
+  redis:
+    image: redis:5.0.7
+    restart: on-failure
+    stop_grace_period: "${DOCKER_STOP_GRACE_PERIOD:-3s}"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_volume:/data
+
+  db:
+    image: postgres:12.2
+    restart: on-failure
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=django
+      - POSTGRES_DB=django
+    env_file:
+      - ./envs/local/postgres
+
+  web:
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    build:
+          context: .
+          dockerfile: Dockerfile
+    command: gunicorn telecine.wsgi:application --bind 0.0.0.0:8000 --log-file=/var/log/gunicorn.log --access-logfile=/var/log/gunicorn_access.log --log-level=info --workers 3 --max-requests 1000 --max-requests-jitter 50
+    volumes:
+      - ./:/home/app/web/
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./envs/local/django
+    depends_on:
+      - db
+      - redis
+    stop_grace_period: "${DOCKER_STOP_GRACE_PERIOD:-3s}"
+
+  #===========================
+  # NGINX
+  #===========================
+  nginx:
+    restart: always
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    ports:
+      - "1337:8000"
+    depends_on:
+      - web
+
+  #===========================
+  # CELERY & FLOWER
+  #===========================
+  celery_worker:
+    build: .
+    env_file:
+      - ./envs/local/django
+    restart: on-failure
+    command: celery -A telecine worker -l info
+    volumes:
+      - ./:/home/app/web/
+    depends_on:
+      - web
+      - redis
+      - db
+
+  celery_beat:
+    build: .
+    env_file:
+      - ./envs/local/django
+    restart: on-failure
+    command: celery -A telecine beat -l info
+    volumes:
+      - ./:/home/app/web/
+    depends_on:
+      - web
+      - redis
+      - db
+
+  flower:
+    build: .
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_PORT=5555
+      - FLOWER_MAX_TASKS=10
+    env_file:
+      - ./.envs/.local/.django
+    command: flower -A telecine --loglevel=info
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./:/home/app/web/
+    depends_on:
+      - celery_worker
+      - celery_beat
+      - redis
+      - db
+
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  redis_volume:

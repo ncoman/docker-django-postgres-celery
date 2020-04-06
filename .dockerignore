@@ -1,0 +1,61 @@
+# In .dockerignore
+#===========================
+#---------------------------
+# Exclude PyCharm
+#---------------------------
+.idea/*
+
+#---------------------------
+# Exclude GIT
+#---------------------------
+.git
+.gitignore
+
+
+#---------------------------
+# Exclude Docker files
+#---------------------------
+.dockerignore
+Dockerfile
+.docker-*
+
+
+#---------------------------
+# Exclude Unit test / coverage reports
+#---------------------------
+tests
+**/htmlcov/
+**/.tox/
+**/.coverage
+**/.coverage.*
+**/.cache
+**/nosetests.xml
+**/coverage.xml
+**/*.cover
+**/.hypothesis/
+
+
+#---------------------------
+# Django stuff:
+#---------------------------
+**/*.log
+
+
+#---------------------------
+# Celery
+#---------------------------
+**/celerybeat-schedule
+**/celerybeat.pid
+
+
+#---------------------------
+# Exclude all Markdown files & docs
+#---------------------------
+*.md
+docs
+**/docs/_build/
+
+# Now make an exception for one file:
+#
+!README.md
+!.envs

@@ -1,0 +1,7 @@
+DATABASE=postgres
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=django
+SQL_USER=django
+SQL_PASSWORD=django
+SQL_HOST=db
+SQL_PORT=5432
