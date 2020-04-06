@@ -1,4 +1,14 @@
-# CFM Django App
+# Django App
 
-TODO: Merge osp and cfm in one app
-git log --pretty="- %s" > CHANGELOG.md
+Welcome to the Docker Django Example Project! 
+
+Components:
+
+Redis
+Postgres
+Gunicorn
+Nginx
+Celery
+Flower
+Silk
+Swagger
