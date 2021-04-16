@@ -7,7 +7,7 @@ redis==3.4.1
 django-celery-beat==2.0.0
 django-celery-results==1.2.1
 flower==0.9.4
-django-debug-toolbar==2.2
+django-debug-toolbar==2.2.1
 requests==2.23.0
 djangorestframework==3.11.0
 django-rest-swagger==2.2.0
